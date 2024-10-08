@@ -3,30 +3,18 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/utility/context/authContext";
 
 const Home = () => {
   const router = useRouter();
   const [error, setError] = useState<string[]>([]);
+  const { login } = useAuth();
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const response = await fetch("/backend/login", {
-      method: form.method.toUpperCase(),
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(Object.fromEntries(formData)),
-    });
-
-    const data = await response.json();
-    if (data.error) {
-      if (data.error === "Email not found") setError(["Email"]);
-      else setError(["Password"]);
-    } else {
+    const returnData = await login(e);
+    if (returnData === "/") {
       router.push("/");
+    } else {
+      setError([returnData]);
     }
   };
 

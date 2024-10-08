@@ -3,30 +3,18 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/utility/context/authContext";
 
 const Home = () => {
   const router = useRouter();
+  const { register } = useAuth();
   const [error, setError] = useState<string[]>([]);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const form = e.currentTarget;
-    const formData = new FormData(form);
-
-    const response = await fetch("/backend/register", {
-      method: form.method.toUpperCase(),
-      headers: {
-        "Cotent-Type": "application/json",
-      },
-      body: JSON.stringify(Object.fromEntries(formData)),
-    });
-
-    const data = await response.json();
-    if (!data.error) {
+    const returnData = await register(e);
+    if (returnData === "/") {
       router.push("/");
     } else {
-      const errorData = data.data;
-      setError(errorData);
+      setError(returnData.split(", "));
     }
   };
 

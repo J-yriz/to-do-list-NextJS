@@ -5,3 +5,7 @@ export interface IAuthBody {
   password: string;
   rememberCheck: boolean;
 }
+
+export interface IUserData {
+  id: number;
+}
