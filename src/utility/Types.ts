@@ -8,4 +8,6 @@ export interface IAuthBody {
 
 export interface IUserData {
   id: number;
+  displayName: string;
+  email: string;
 }

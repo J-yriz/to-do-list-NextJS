@@ -6,8 +6,8 @@ import { AuthProvider } from "../utility/context/authContext";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "To Do List - Jariz",
-  description: "Create a to do list with Next.js",
+  title: "Notepad - Jariz",
+  description: "Create a Notepad with Next.js",
 };
 
 export default function RootLayout({
