@@ -12,6 +12,7 @@ export const SettingsAccessProvider = ({ children, userId }: { children: React.R
   const [isValid, setIsValid] = useState<boolean>(true);
 
   useEffect(() => {
+    document.title = "Settings - Notepad";
     const dataId = localStorage.getItem("NMBR");
     if (userId !== dataId) {
       setIsValid(false);
@@ -25,7 +26,7 @@ export const SettingsAccessProvider = ({ children, userId }: { children: React.R
       ) : (
         <div className="min-h-screen flex flex-col items-center justify-center">
           <p className="text-3xl font-bold">403 Forbidden</p>
-          <p>You can't access this page ID : {userId}</p>
+          <p>You cant access this page ID : {userId}</p>
         </div>
       )}
     </SettingsAccessContext.Provider>

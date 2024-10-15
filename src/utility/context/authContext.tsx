@@ -1,9 +1,8 @@
 "use client";
 
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
 import { IResponseApi, IUserData } from "../Types";
+import { useRouter, usePathname } from "next/navigation";
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface AuthContextProps {
@@ -27,7 +26,8 @@ const AuthContext = createContext<AuthContextProps>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
   const pathname = usePathname();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showWeb, setShowWeb] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userData, setUserData] = useState<IUserData>({} as IUserData);
 
   const notMountedPaths = ["/", "/register", "/login"];
@@ -62,32 +62,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const checkAuth = async () => {
     const userToken = Cookies.get("TUVR");
-    if (userToken) {
-      const catchData = async () => {
-        if (Object.keys(userData).length === 0) {
-          const response = await fetch(`/backend/userAuthProcess/${userToken}`, { method: "GET" });
-          const dataReponse = await response.json();
-          if (dataReponse.status === 200) {
-            setIsAuthenticated(true);
-            setUserData(dataReponse.data[0]);
-            localStorage.setItem("NMBR", dataReponse.data[0].id);
-          } else {
-            rememberPassword(localStorage.getItem("NMBR") as string);
-          }
-        } else {
-          document.title = `${userData.displayName} - Notepad`;
-        }
-      };
-
-      catchData();
-    } else {
+    const totalData = Object.keys(userData).length;
+    if (userToken && totalData === 0) {
+      setShowWeb(false);
+      const response = await fetch(`/backend/userAuthProcess/${userToken}`, { method: "GET" });
+      const dataReponse = await response.json();
+      if (dataReponse.status === 200) {
+        setIsAuthenticated(true);
+        setUserData(dataReponse.data[0]);
+        localStorage.setItem("NMBR", dataReponse.data[0].id);
+      } else {
+        rememberPassword(localStorage.getItem("NMBR") as string);
+      }
+    } else if (userToken && totalData > 0) {
+      setShowWeb(true);
+    } else if (!userToken) {
       rememberPassword(localStorage.getItem("NMBR") as string);
     }
   };
 
+  // USE THIS IF YOU WANT TO CHANGE THE TITLE OF THE PAGE [sometimes]
+  // else if (userToken && totalData > 0) {
+  //   document.title = `${userData.displayName} - Notepad`;
+  // }
+
   useEffect(() => {
     checkAuth();
-  }, [pathname, setIsAuthenticated, setUserData]);
+  }, [pathname, isAuthenticated]);
 
   const authEnable = (dataResponse: IResponseApi) => {
     setIsAuthenticated(true);
@@ -120,7 +121,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return authEnable(dataResponse);
     } else {
       let errorData;
-      dataResponse.data.length >= 1 ? (errorData = dataResponse.data.join(",")) : (errorData = dataResponse.data[0]);
+      if (dataResponse.data.length >= 1) errorData = dataResponse.data.join(",");
+      else errorData = dataResponse.data[0];
       return errorData;
     }
   };
@@ -152,7 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  return <AuthContext.Provider value={{ isAuthenticated, userData, register, login, checkAuth, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ isAuthenticated, userData, register, login, checkAuth, logout }}>{showWeb && children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);

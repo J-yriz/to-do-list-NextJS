@@ -33,7 +33,7 @@ const Navbar = () => {
     if (!conditionWindow) {
       document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
     }
-  }, [isMenuOpen]);
+  }, [isMenuOpen, conditionWindow]);
 
   return (
     <nav id="navbar" className={`bg-color1 ${conditionWindow ? "py-3 px-52 top-0 sticky" : "right-0 h-screen fixed"} z-40`}>
