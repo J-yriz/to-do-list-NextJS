@@ -52,48 +52,63 @@ const Home = ({ params }: { params: { userId: string } }) => {
         <div className="flex flex-col w-full sm:w-64">
           <SideBar userId={`${userId}`} />
         </div>
-        <div className="w-full">
+        <div className="w-full mt-3 sm:mt-0">
           <p className="text-3xl">General</p>
-          <div className="border-t mt-1 mb-5 border-white/50"></div>
-          <form id="general" method="POST" className="flex flex-wrap lg:flex-nowrap space-y-2 lg:space-y-0 lg:space-x-5">
-            <label htmlFor="displayName" className="flex flex-col w-full">
-              <span className="text-color3 font-semibold mb-1">Display Name</span>
-              <input
-                type="text"
-                id="displayName"
-                name="displayName"
-                className="focus:outline-none p-2 rounded-md bg-color2"
-                defaultValue={`${userData.displayName}`}
-              />
-            </label>
-            <label htmlFor="email" className="flex flex-col w-full">
-              <span className="text-color3 font-semibold mb-1">Email</span>
-              <input type="email" id="email" name="email" className="focus:outline-none p-2 rounded-md bg-color2" defaultValue={`${userData.email}`} />
-            </label>
-          </form>
-          <div className="flex justify-end">
-            <button
-              onClick={() => {
-                setShowModal(!showModal);
-                checkAuth();
-              }}
-              className="bg-green-700 p-2 rounded-md text-sm font-semibold mt-5"
-            >
-              Update Profile
-            </button>
+          <div className="border-t mt-1 mb-5 border-white/50">
+            <form id="general" method="POST" className="flex mt-3 flex-wrap lg:flex-nowrap space-y-2 lg:space-y-0 lg:space-x-5">
+              <label htmlFor="displayName" className="flex flex-col w-full">
+                <span className="text-color3 font-semibold mb-1">Display Name</span>
+                <input
+                  type="text"
+                  id="displayName"
+                  name="displayName"
+                  className="focus:outline-none p-2 rounded-md bg-color2"
+                  defaultValue={`${userData.displayName}`}
+                />
+              </label>
+              <label htmlFor="email" className="flex flex-col w-full">
+                <span className="text-color3 font-semibold mb-1">Email</span>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="focus:outline-none p-2 rounded-md bg-color2"
+                  defaultValue={`${userData.email}`}
+                />
+              </label>
+            </form>
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  const emailInput = document.getElementById("email") as HTMLInputElement;
+                  if (emailInput && emailInput.checkValidity()) {
+                    setShowModal(!showModal);
+                    checkAuth();
+                  } else {
+                    emailInput.reportValidity();
+                  }
+                }}
+                className="bg-green-700 p-2 rounded-md text-sm font-semibold mt-5"
+              >
+                Update Profile
+              </button>
+            </div>
           </div>
         </div>
       </div>
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 w-50 h-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 w-50 h-50 flex items-center justify-center z-50">
           <div className="bg-color1 p-2 rounded-md">
             <p className="font-semibold">Change User Data</p>
             <div className="border-t">
               <p className="my-1">To confirm the changes, please enter your password.</p>
-              <form id="confirm" method="POST" onSubmit={handleSubmit} className="flex flex-col space-y-2">
+              <form id="confirm" method="POST" onSubmit={handleSubmit} className="flex mt-2 flex-col space-y-2">
                 <label htmlFor="password">
                   {error.includes("password") && <p className="text-red-300">Password is incorrect</p>}
                   <input type="password" id="password" name="password" className="focus:outline-none p-2 rounded-md bg-color2/50 w-full" required />
+                  {/* <Link href={`/`} className="hover:underline text-sm">
+                    Forgot Your password?
+                  </Link> */}
                 </label>
                 <div className="flex space-x-2">
                   <button

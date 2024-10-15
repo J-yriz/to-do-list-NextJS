@@ -36,10 +36,10 @@ const Navbar = () => {
   }, [isMenuOpen]);
 
   return (
-    <nav id="navbar" className={`bg-color1 ${conditionWindow ? "py-3 px-52 top-0 sticky" : "right-0 h-screen fixed"}`}>
+    <nav id="navbar" className={`bg-color1 ${conditionWindow ? "py-3 px-52 top-0 sticky" : "right-0 h-screen fixed"} z-40`}>
       {!conditionWindow && (
-        <div className={`${isMenuOpen ? "w-72" : "w-3"} transition-all`}>
-          <div className={`${isMenuOpen ? "right-[280px]" : "right-1"} top-4 absolute transition-all`}>
+        <div className={`${isMenuOpen ? "w-screen" : "w-3"} transition-all`}>
+          <div className={`${isMenuOpen ? "right-4" : "right-1"} top-4 absolute transition-all`}>
             <button className="bg-color1 p-1 pr-3 rounded" onClick={() => setIsMenuOpen(!isMenuOpen)}>
               <i>
                 <Icon icon={`iconamoon:menu-burger-horizontal-bold`} style={{ fontSize: "2rem" }} />
@@ -55,14 +55,20 @@ const Navbar = () => {
                 Object.entries(ProfSettings).map(([key, { func, path, icon }]) => (
                   <div key={key}>
                     {path ? (
-                      <Link href={`${path}`} className="flex items-center">
+                      <Link onClick={() => setIsMenuOpen(!isMenuOpen)} href={`${path}`} className="flex items-center">
                         <i className="mr-2">
                           <Icon icon={`${icon}`} style={{ fontSize: "1rem" }} />
                         </i>
                         {key.charAt(0).toUpperCase() + key.slice(1)}
                       </Link>
                     ) : (
-                      <button onClick={func} className="flex items-center">
+                      <button
+                        onClick={() => {
+                          func();
+                          setIsMenuOpen(!isMenuOpen);
+                        }}
+                        className="flex items-center"
+                      >
                         <i className="mr-2">
                           <Icon icon={`${icon}`} style={{ fontSize: "1rem" }} />
                         </i>

@@ -1,3 +1,10 @@
+export interface IResponseApi {
+  status: number;
+  message: string;
+  total: number;
+  data: any[];
+}
+
 export interface IAuthBody {
   username: string;
   displayName: string;

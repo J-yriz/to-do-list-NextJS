@@ -14,7 +14,9 @@ const Home = () => {
     if (returnData === "/") {
       router.push("/");
     } else {
-      setError(returnData.split(", "));
+      if (returnData !== undefined) {
+        setError(returnData.split(","));
+      }
     }
   };
 
