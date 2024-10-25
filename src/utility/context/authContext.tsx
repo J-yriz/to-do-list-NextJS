@@ -30,20 +30,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [userData, setUserData] = useState<IUserData>({} as IUserData);
 
-  const notMountedPaths = ["/", "/register", "/login"];
-
-  const authDisable = () => {
-    localStorage.removeItem("NMBR");
-    setIsAuthenticated(false);
-    setUserData({} as IUserData);
-    if (!notMountedPaths.includes(pathname)) {
-      router.push("/");
-    }
-  };
+  const notMountedPaths = ["/register", "/login"];
 
   const rememberPassword = async (data: string) => {
     const rememberToken = Cookies.get("TURS");
-    if (rememberToken) {
+    if (!rememberToken) {
+      if (Object.entries(userData).length > 0 && isAuthenticated) {
+        setIsAuthenticated(false);
+        setUserData({} as IUserData);
+        localStorage.removeItem("NMBR");
+      }
+      setShowWeb(true);
+      if (!notMountedPaths.includes(pathname)) router.push("/");
+    } else if (rememberToken) {
       const response = await fetch(`/backend/userAuthProcess/${data}/rememberPassword`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -54,9 +53,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         Cookies.set("TUVR", dataReponse.data[0].cookies, { expires: 65 / 1440 });
         checkAuth();
       }
-    } else {
-      authDisable();
-      Cookies.remove("TUVR");
     }
   };
 
@@ -68,8 +64,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await fetch(`/backend/userAuthProcess/${userToken}`, { method: "GET" });
       const dataReponse = await response.json();
       if (dataReponse.status === 200) {
-        setIsAuthenticated(true);
         setUserData(dataReponse.data[0]);
+        setIsAuthenticated(true);
         localStorage.setItem("NMBR", dataReponse.data[0].id);
       } else {
         rememberPassword(localStorage.getItem("NMBR") as string);
@@ -87,8 +83,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // }
 
   useEffect(() => {
-    checkAuth();
-  }, [pathname, isAuthenticated]);
+    if (!notMountedPaths.includes(pathname)) checkAuth();
+    else setShowWeb(true);
+  }, [pathname, isAuthenticated, userData]);
 
   const authEnable = (dataResponse: IResponseApi) => {
     setIsAuthenticated(true);
@@ -117,14 +114,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const response = await fetchUserData("/backend/register", formData, form.method);
     const dataResponse = (await response.json()) as IResponseApi;
-    if (dataResponse.status === 200 || dataResponse.status === 201) {
-      return authEnable(dataResponse);
-    } else {
-      let errorData;
-      if (dataResponse.data.length >= 1) errorData = dataResponse.data.join(",");
-      else errorData = dataResponse.data[0];
-      return errorData;
-    }
+    return dataResponse.status === 200 || dataResponse.status === 201
+      ? authEnable(dataResponse)
+      : dataResponse.data.length >= 1
+      ? dataResponse.data.join(",")
+      : dataResponse.data[0];
   };
 
   const login = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -135,8 +129,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const response = await fetchUserData("/backend/login", formData, form.method);
     const dataResponse = (await response.json()) as IResponseApi;
-    if (dataResponse.status === 200 || dataResponse.status === 201) return authEnable(dataResponse);
-    else return dataResponse.message === "Email not found" ? "Email" : "Password";
+    return dataResponse.status === 200 || dataResponse.status === 201
+      ? authEnable(dataResponse)
+      : dataResponse.message === "Email not found"
+      ? "Email"
+      : "Password";
   };
 
   const logout = async () => {
@@ -145,9 +142,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: userData.email }),
     });
-    const dataReponse = await response.json();
-    if (dataReponse.status === 200) {
-      if (Cookies.get("TURS")) Cookies.remove("TURS");
+    if ((await response.json()).status === 200) {
+      Cookies.remove("TURS");
       Cookies.remove("TUVR");
       setIsAuthenticated(false);
       window.location.reload();

@@ -1,6 +1,7 @@
 "use client";
 
 import SideBar from "../SideBar";
+import { Icon } from "@iconify/react";
 import Navbar from "@/components/Navbar";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/utility/context/authContext";
@@ -11,6 +12,7 @@ const Home = ({ params }: { params: { userId: string } }) => {
   const { userData, checkAuth } = useAuth();
   const [error, setError] = useState<string[]>([""]);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   useEffect(() => {
     document.body.style.overflow = showModal ? "hidden" : "auto";
@@ -57,24 +59,30 @@ const Home = ({ params }: { params: { userId: string } }) => {
           <div className="border-t mt-1 mb-5 border-white/50">
             <form id="general" method="POST" className="flex mt-3 flex-wrap lg:flex-nowrap space-y-2 lg:space-y-0 lg:space-x-5">
               <label htmlFor="displayName" className="flex flex-col w-full">
-                <span className="text-color3 font-semibold mb-1">Display Name</span>
-                <input
-                  type="text"
-                  id="displayName"
-                  name="displayName"
-                  className="focus:outline-none p-2 rounded-md bg-color2"
-                  defaultValue={`${userData.displayName}`}
-                />
+                <p className="text-color3 font-semibold mb-1">Display Name</p>
+                <div className="flex flex-col space-y-2 bg-gray-700/50 p-2 rounded">
+                  <span className="text-color3 font-semibold">Current Name</span>
+                  <input
+                    type="text"
+                    id="displayName"
+                    name="displayName"
+                    className="focus:outline-none p-2 rounded-md bg-color2 w-full"
+                    defaultValue={`${userData.displayName}`}
+                  />
+                </div>
               </label>
               <label htmlFor="email" className="flex flex-col w-full">
-                <span className="text-color3 font-semibold mb-1">Email</span>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="focus:outline-none p-2 rounded-md bg-color2"
-                  defaultValue={`${userData.email}`}
-                />
+                <p className="text-color3 font-semibold mb-1">Email</p>
+                <div className="flex flex-col space-y-2 bg-gray-700/50 p-2 rounded">
+                  <span className="text-color3 font-semibold mb-1">Current Email</span>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    className="focus:outline-none p-2 rounded-md bg-color2"
+                    defaultValue={`${userData.email}`}
+                  />
+                </div>
               </label>
             </form>
             <div className="flex justify-end">
@@ -103,12 +111,20 @@ const Home = ({ params }: { params: { userId: string } }) => {
             <div className="border-t">
               <p className="my-1">To confirm the changes, please enter your password.</p>
               <form id="confirm" method="POST" onSubmit={handleSubmit} className="flex mt-2 flex-col space-y-2">
-                <label htmlFor="password">
+                <label htmlFor="password" className="flex flex-col w-full relative">
                   {error.includes("password") && <p className="text-red-300">Password is incorrect</p>}
-                  <input type="password" id="password" name="password" className="focus:outline-none p-2 rounded-md bg-color2/50 w-full" required />
-                  {/* <Link href={`/`} className="hover:underline text-sm">
-                    Forgot Your password?
-                  </Link> */}
+                  <input
+                    type={`${showPassword ? "text" : "password"}`}
+                    id="password"
+                    name="password"
+                    className="focus:outline-none p-2 rounded-md bg-color2/50 w-full"
+                    required
+                  />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)}>
+                    <i className="absolute top-2 right-3 cursor-pointer">
+                      <Icon icon={showPassword ? "mdi:eye" : "humbleicons:eye-close"} style={{ fontSize: "1.5rem" }} />
+                    </i>
+                  </button>
                 </label>
                 <div className="flex space-x-2">
                   <button

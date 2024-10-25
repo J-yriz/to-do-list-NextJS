@@ -13,6 +13,12 @@ export interface IAuthBody {
   rememberCheck: boolean;
 }
 
+export interface IChangePassword {
+  currentPassword: string;
+  newPassword: string;
+  repeatNewPassword: string;
+}
+
 export interface IUserData {
   id: number;
   displayName: string;
