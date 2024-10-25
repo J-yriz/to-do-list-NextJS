@@ -18,3 +18,21 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+@layer base {
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+  hr {
+    @apply border-t border-color2
+  }
+  .brdr {
+    @apply border border-color2
+  }
+  /* .button {
+    @apply rounded px-3 py-2 bg-gray-800 text-white font-medium
+  } */
+  .button {
+    @apply rounded hover:before:bg-yellow-500 hover:before:border-yellow-500 relative py-2 w-40 overflow-hidden bg-gray-800 px-3 text-yellow-500 shadow-2xl transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellow-500 before:transition-all before:duration-500 hover:text-white hover:shadow-yellow-500 hover:before:left-0 hover:before:w-full
+  }
+}

@@ -1,11 +1,18 @@
+import Card from "@/components/Card";
 import Navbar from "@/components/Navbar";
 
 const Home = () => {
   return (
     <>
-      <Navbar />
-      <div className="px-12 md:px-24 py-3 lg:px-52 transition-all">
-        <p>ea</p>
+      {/* <Navbar /> */}
+      <div className="w-full px-40 pt-4 min-h-screen bg-gray-900">
+        <div className="grid xl:grid-cols-5 gap-2 ">
+          <Card/>
+          <Card/>
+          <Card/>
+          <Card/>
+          <Card/>
+        </div>
       </div>
     </>
   );
