@@ -24,3 +24,7 @@ export interface IUserData {
   displayName: string;
   email: string;
 }
+
+export interface ITitleBubble {
+  title: string
+}
